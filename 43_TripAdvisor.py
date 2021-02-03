@@ -69,19 +69,13 @@ class TripAdvisorCrawler(CrawlSpider):
     )
     
     def parser_opinions(self, response):
-        #selector = Selector(response)
         BS_object = BeautifulSoup(response.body, 'lxml')
         comment_blocks = BS_object.find_all("div",{"data-test-target":"HR_CC_CARD"})
-        #comment_blocks = selector.xpath("//div[@data-test-target='HR_CC_CARD']")
-        #Hotel = selector.xpath("//h1[@id='HEADING']/text()").get()
         Hotel = BS_object.find("h1",{"id":"HEADING"}).text
-        #for comment_block, cb in zip(comment_blocks, block_2):
         for cb in comment_blocks:
-            #Name = comment_block.xpath("//a[contains(@class, 'ui_header') and contains(@href, 'Profile')]/text()").get()
             Name = cb.find('a', {"class":re.compile(r"ui_header"), "href":re.compile(r"Profile")}).get_text()
             Score = cb.find("span", {"class":re.compile(r"ui_bubble")}).attrs["class"][-1][-2:]
             Title = cb.find("div", {"data-test-target":"review-title"}).find("span").get_text()
-            #Description = comment_block.xpath("//q//text()").get()
             Description = cb.find('q').text
             
             #print("#"*60)
